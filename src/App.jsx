@@ -1,32 +1,32 @@
-import {useActionState} from "react"
-import { updateNameInDB } from "./api"
+import React, {useActionState} from 'react'
+import {updateNameInDB} from "./api.js";
 
-function App() {
-    const [name,actionFunction, isPending] = useActionState(updateName, JSON.parse(localStorage.getItem("name")) || "Anonymous user");
+function App () {
+    const [name, actionFunction, isPending] = useActionState(updateName, JSON.parse(localStorage.getItem("name"))||'Anonymous user')
     async function updateName(prevState,formAction) {
-        try {
+        try{
             return await updateNameInDB(formAction.get("name"))
-        } catch (error) {
+        } catch(error){
             console.error(error.message)
         }
     }
 
     return (
         <>
-            <p className="username">
-                Current user: <span>{name}</span>
-            </p>
+            <p className={'username'}> Current user: {name} </p>
             {isPending && <p>Loading...</p>}
             <form action={actionFunction}>
                 <input
-                    type="text"
-                    name="name"
-                    required
+                type="text"
+                name="name"
+                required
                 />
-                <button type="submit">Update</button>
+                <button type="submit">
+                    Submit
+                </button>
             </form>
         </>
     )
 }
-
 export default App
+
