@@ -1,32 +1,32 @@
-import React, {useState} from 'react'
-import {updateNameInDB} from "./api.js";
-const App = () => {
-    const [name, setName] = useState(
-        ()=>JSON.parse(localStorage.getItem('name'))||'Anonymous user'
-    )
-    async function handleSubmit(formAction) {
-        try{
-            const newName = updateNameInDB(formAction.get("name"));
-            setName(newName);
-        }
-        catch(error){
-            console.error(error);
+import {useActionState} from "react"
+import { updateNameInDB } from "./api"
+
+function App() {
+    const [name,actionFunction, isPending] = useActionState(updateName, JSON.parse(localStorage.getItem("name")) || "Anonymous user");
+    async function updateName(prevState,formAction) {
+        try {
+            return await updateNameInDB(formAction.get("name"))
+        } catch (error) {
+            console.error(error.message)
         }
     }
+
     return (
         <>
-            Current User: {name}
-            <form action={handleSubmit}>
+            <p className="username">
+                Current user: <span>{name}</span>
+            </p>
+            {isPending && <p>Loading...</p>}
+            <form action={actionFunction}>
                 <input
-                type="text"
-                name="name"
+                    type="text"
+                    name="name"
+                    required
                 />
-                <button type="submit">
-                    submit
-                </button>
+                <button type="submit">Update</button>
             </form>
         </>
     )
 }
-export default App
 
+export default App
