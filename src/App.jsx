@@ -1,38 +1,32 @@
 import React, {useState} from 'react'
 import {updateNameInDB} from "./api.js";
-function App(){
-    const [input, setInput] = useState('')
+const App = () => {
     const [name, setName] = useState(
         ()=>JSON.parse(localStorage.getItem('name'))||'Anonymous user'
     )
-    function handleChange(e){
-        setInput(e.target.value)
-    }
-    async function handleSubmit(e){
-        e.preventDefault()
-        try {
-            const newName = updateNameInDB(input)
-            setName(newName)
-            setInput('')
-        } catch (error) {
-            console.error(error.message)
+    async function handleSubmit(formAction) {
+        try{
+            const newName = updateNameInDB(formAction.get("name"));
+            setName(newName);
+        }
+        catch(error){
+            console.error(error);
         }
     }
     return (
-        <div>
-            <p className={'username'}>
-                Current User: <span>{name}</span>
-            </p>
-            <form onSubmit={handleSubmit}>
+        <>
+            Current User: {name}
+            <form action={handleSubmit}>
                 <input
-                    onChange={handleChange}
-                    type = "text"
-                    required/>
+                type="text"
+                name="name"
+                />
                 <button type="submit">
-                    Update User
+                    submit
                 </button>
             </form>
-        </div>
+        </>
     )
 }
 export default App
+
