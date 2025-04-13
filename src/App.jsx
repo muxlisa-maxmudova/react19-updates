@@ -1,23 +1,20 @@
-import React, {useActionState, useState} from 'react'
+import React, {useActionState } from 'react'
 import {updateNameInDB} from "./api.js";
 
 function App () {
-    const [name, actionFunction, isPending] = useActionState(updateName, JSON.parse(localStorage.getItem("name"))||'Anonymous user')
-    const [er, setEr] = useState(false)
+    const [state, actionFunction, isPending] = useActionState(updateName, {error:null, name:JSON.parse(localStorage.getItem("name"))||'Anonymous user'})
     async function updateName(prevState,formAction) {
         try{
-            return await updateNameInDB(formAction.get("name"))
+            const newName = await updateNameInDB(formAction.get("name"))
+            return {name: newName, error:null}
         } catch(error){
-            console.error(error.message)
-            setEr(error.message)
+           return {...prevState, error}
         }
     }
-
     return (
         <>
-            <p className={'username'}> Current user: {name} </p>
+            <p className={'username'}> Current user: {state.name} </p>
             {isPending && <p>Loading...</p>}
-            {<p style={{color:'red'}}>{er}</p>}
             <form action={actionFunction}>
                 <input
                 type="text"
@@ -27,6 +24,7 @@ function App () {
                 <button type="submit">
                     Submit
                 </button>
+                {state.error && <p style={{color:'red'}}>{state.error.message}</p>}
             </form>
         </>
     )
